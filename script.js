@@ -1,38 +1,37 @@
-const output = document.getElementById("output");
-const btn = document.getElementById("download-images-button");
+ const output = document.getElementById("output");
+        const btn = document.getElementById("download-images-button");
 
-const images = [
-  { url: "https://imgs.search.brave.com/Ow9SGbN5zlN7yG_FtgPBADyrJrE036QEuw9fCYYhz1w/rs:fit:860:0:0:0/g:ce/aHR0cHM6Ly90My5m/dGNkbi5uZXQvanBn/LzA0LzYzLzc0LzI2/LzM2MF9GXzQ2Mzc0/MjY2N19RYnIyQVVI/T2dyZVlpTjFwbDBi/c1o4ZzlQMnE4VUF6/ci5qcGc" },
-  { url: "https://imgs.search.brave.com/Ow9SGbN5zlN7yG_FtgPBADyrJrE036QEuw9fCYYhz1w/rs:fit:860:0:0:0/g:ce/aHR0cHM6Ly90My5m/dGNkbi5uZXQvanBn/LzA0LzYzLzc0LzI2/LzM2MF9GXzQ2Mzc0/MjY2N19RYnIyQVVI/T2dyZVlpTjFwbDBi/c1o4ZzlQMnE4VUF6/ci5qcGc" },
-  { url: "https://imgs.search.brave.com/Ow9SGbN5zlN7yG_FtgPBADyrJrE036QEuw9fCYYhz1w/rs:fit:860:0:0:0/g:ce/aHR0cHM6Ly90My5m/dGNkbi5uZXQvanBn/LzA0LzYzLzc0LzI2/LzM2MF9GXzQ2Mzc0/MjY2N19RYnIyQVVI/T2dyZVlpTjFwbDBi/c1o4ZzlQMnE4VUF6/ci5qcGc" },
-];
+        const images = [
+            { url: "https://picsum.photos/id/237/200/300" },
+            { url: "https://picsum.photos/id/238/200/300" },
+            { url: "https://picsum.photos/id/239/200/300" },
+        ];
 
-btn.addEventListener("click", function() {
-  // Function to download a single image
-  function downloadImage(image) {
-    return new Promise((resolve, reject) => {
-      const img = new Image();
-      img.src = image.url;
+        btn.addEventListener("click", function() {
+            // Function to download a single image
+            function downloadImage(image) {
+                return new Promise((resolve, reject) => {
+                    const img = new Image();
+                    img.src = image.url;
+                    
+                    img.onload = () => resolve(img);  // Image loaded successfully
+                    img.onerror = () => reject(`Failed to load image's URL: ${image.url}`); // Error loading image
+                });
+            }
 
-      img.onload = () => resolve(img);
-      img.onerror = () => reject(`Failed to load image's URL: ${image.url}`);
-    });
-  }
+            // Clear the output div before starting to load new images
+            output.innerHTML = '<p>Loading images...</p>';
 
-  // Use Promise.all to download all images in parallel
-  Promise.all(images.map(downloadImage))
-    .then((loadedImages) => {
-      // Clear previous images
-      output.innerHTML = '';
-
-      // Display all loaded images
-      loadedImages.forEach((img) => {
-        output.appendChild(img);
-      });
-    })
-    .catch((error) => {
-      // Handle any failed image download
-      output.innerHTML = `<p style="color: red;">${error}</p>`;
-    });
-});
+            // Use Promise.all to download all images in parallel
+            Promise.all(images.map(downloadImage))
+                .then((loadedImages) => {
+                    output.innerHTML = ''; // Clear the "Loading..." text
+                    loadedImages.forEach((img) => {
+                        output.appendChild(img); // Append each loaded image to the output div
+                    });
+                })
+                .catch((error) => {
+                    output.innerHTML = `<p style="color: red;">${error}</p>`; // Show error message if any image fails to load
+                });
+        });
 
